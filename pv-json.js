@@ -26,7 +26,7 @@ http.createServer(function(request, response) {
 	    response.statusCode = 200;
 	    response.setHeader('Content-Type', 'application/json');
 
-		db.all("SELECT strftime('%H:%M', TimeStamp) as title, power as value from vwDayData where TimeStamp like Date('now')||'%';", function(error, rows) {
+		db.all("SELECT strftime('%H:%M', TimeStamp) as title, power as value from vwDayData where TimeStamp like Date('now', 'localtime')||'%';", function(error, rows) {
 			response.write('{ "graph" : { "title" : "PV Output", "yAxis" : { "minValue" : 0, "maxValue" : 4000 }, "datasequences" : [ { "title" : "", "datapoints" : ');
 			response.write(JSON.stringify(rows));
 			response.write('}]}}');
