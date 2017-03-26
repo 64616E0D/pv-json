@@ -34,7 +34,7 @@ http.createServer(function(request, response) {
 			});
 
 			db.all("SELECT strftime('%H:%M', TimeStamp) as title, power as value FROM vwDayData WHERE TimeStamp LIKE Date('now', 'localtime')||'%' ORDER BY title ASC;", function(error, rows) {
-				response.write('{ "title" : "Yesterday", "color" : "orange", "datapoints" : ');  // open this set of datapoints, give it a title and colour
+				response.write('{ "title" : "Today", "color" : "green", "datapoints" : ');  // open this set of datapoints, give it a title and colour
 				response.write(JSON.stringify(rows));
 				response.write('}'); // close this set of datapoints
 				response.write(']}}'); // close the set of dataseqiences, the graph, and the JSON data
