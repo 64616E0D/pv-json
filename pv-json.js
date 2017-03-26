@@ -4,7 +4,7 @@ var sqlite3 = require('sqlite3').verbose();
 
 var smadata = "/home/dan/smadata/SBFspot.db";
 var inverter = "2130346114"; // Inverter serial number
-var port = 8000;
+var port = 8001;
 
 http.createServer(function(request, response) {
 	var db = new sqlite3.Database(smadata, sqlite3.OPEN_READONLY);
@@ -25,15 +25,23 @@ http.createServer(function(request, response) {
 
 	    response.statusCode = 200;
 	    response.setHeader('Content-Type', 'application/json');
-
-		db.all("SELECT strftime('%H:%M', TimeStamp) as title, power as value from vwDayData where TimeStamp like Date('now', 'localtime')||'%';", function(error, rows) {
-			response.write('{ "graph" : { "title" : "PV Output", "yAxis" : { "minValue" : 0, "maxValue" : 4000 }, "datasequences" : [ { "title" : "", "datapoints" : ');
+		response.write('{ "graph" : { "title" : "PV Output", "type" : "line", "yAxis" : { "minValue" : 0, "maxValue" : 4000 }, "datasequences" : [');
+		
+		db.all("SELECT strftime('%H:%M', TimeStamp) as title, power as value from vwDayData where TimeStamp like Date('now', '-1 day', 'localtime')||'%';", function(error, rows) {
+			response.write(' { "title" : "Yesterday", "color" : "orange", "datapoints" : ');
 			response.write(JSON.stringify(rows));
-			response.write('}]}}');
-			response.end();
+			response.write('},');
 		});
 
+		db.all("SELECT strftime('%H:%M', TimeStamp) as title, power as value from vwDayData where TimeStamp like Date('now', 'localtime')||'%';", function(error, rows) {
+			response.write('{ "title" : "Today", "color" : "green", "datapoints" : ');
+			response.write(JSON.stringify(rows));
+			response.write('}]}}');
+			response.end() 
+		});
+		
+		db.close();
 	});
-}).listen(port, 'localhost');
+}).listen(port);
 
 
